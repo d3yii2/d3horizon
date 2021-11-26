@@ -10,7 +10,8 @@
         }
     ],
     "require": {
-        "yiisoft/yii2": "*"
+        "yiisoft/yii2": "*",
+        "simialbi/yii2-rest-client": "*"
     },
     "autoload": {
         "psr-4": {
