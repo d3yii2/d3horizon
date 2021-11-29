@@ -11,7 +11,9 @@
     ],
     "require": {
         "yiisoft/yii2": "*",
-        "simialbi/yii2-rest-client": "*"
+        "simialbi/yii2-rest-client": "*",
+        "ext-simplexml": "*",
+        "ext-libxml": "*"
     },
     "autoload": {
         "psr-4": {
