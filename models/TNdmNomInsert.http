@@ -1,0 +1,19 @@
+POST https://horizonweb-cloud.visma.lv/REST_H34764033/rest/TNdmNom/template/3
+Accept: application/json
+Authorization: Basic RESTDEMO_ACONSULT 0QMochyCxD6EJmn5Xa90
+Content-Type: application/json
+
+
+{"entity":{
+"PK_DOKT":3,
+"PK_DOKT":2015,
+"KODS":"NCLT001",
+"NOSAUK":"CLT100 C 5(20-20-20-20-20)V/N/740/2000",
+"VIEN_KODS":"M3",
+"VIEN_NOSAUK":"Kubikmetri",
+"STATUSS":0,
+"PK_NOMGR":2,
+"PK_VIEN": 13
+}}
+
+###
