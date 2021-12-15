@@ -5,7 +5,6 @@ namespace d3yii2\d3horizon\controllers\test;
 use d3system\commands\D3CommandController;
 use d3yii2\d3horizon\models\TNdmNom;
 use d3yii2\d3horizon\Module;
-use yii\console\ExitCode;
 use d3yii2\d3horizon\models\Creditor;
 use yii\helpers\VarDumper;
 
@@ -41,29 +40,46 @@ class CreditorController extends D3CommandController
 
     public function actionIndex()
     {
-        /*
+
+        //NCLT112A
+
+//        $models = TNdmNom::findOne(['KODS' => 'NCLT112A']);
+//        foreach ($models as $model) {
+//            $this->out(VarDumper::dumpAsString($model->attributes));
+//        }
+
+//        $models = TNdmNom::findAll(['KODS' => 'NCLT112A']);
+//        foreach ($models as $model) {
+//            $this->out(VarDumper::dumpAsString($model->attributes));
+//        }
+//        $models = TNdmNom::find()->where(['KODS' => 'NCLT112A'])->all();
+//        foreach ($models as $model) {
+//            $this->out(VarDumper::dumpAsString($model->attributes));
+//        }
+
         $model = new TNdmNom();
 
-        $model->KODS = 'NCLT013';
-        $model->NOSAUK = 'CLT69 C 3(23-23-23)V/V/1300/1300';
+        $model->KODS = 'NCLT115';
+        $model->NOSAUK = 'CLT69 C 3(23-23-23)V/V/1051/1051';
         $model->PK_NOMGR = 2;
         $model->PK_VIEN = 13; //gabali
-        //$model->PK_LIKME = 1;
         $model->STATUSS = 0;
-        //$model->PK_DNORGRP = 1;
         if (!$model->save()) {
             $this->out(VarDumper::dumpAsString($model->errors));
         }
-        $this->out('id: ' . $model->id);
+        $this->out('PK_NOM: ' . $model->PK_NOM);
 
-        if ($model2=TNdmNom::findOne($model->id)) {
+        $model->KODS .= 'A';
+        $model->save();
+
+
+        if ($model2=TNdmNom::findOne($model->PK_NOM)) {
             $this->out(VarDumper::dumpAsString($model2->attributes));
-        } else {
-            $this->out('neatrada: '. $model->id);
         }
-        */
-        $list = TNdmNom::find()->where(['KODS' =>'NCLT013'])->all();
-        VarDumper::dumpAsString($list);
+        $this->out('delete');
+        $count = $model2->delete();
+        $this->out('Count: ' . $count);
+
     }
 
     public function actionIndex1()

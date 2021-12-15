@@ -2,7 +2,7 @@
 
 namespace d3yii2\d3horizon\models;
 
-use d3yii2\d3horizon\components\ActiveRecord;
+use d3yii2\d3horizon\components\ApiModel;
 
 /**
  *
@@ -16,7 +16,7 @@ use d3yii2\d3horizon\components\ActiveRecord;
  * @property string $Size200StringType
  * @property string $Size400StringType
  */
-class NomenklaturaGrupa extends ActiveRecord
+class NomenklaturaGrupa extends ApiModel
 {
 
     public function rules()

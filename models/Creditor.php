@@ -2,7 +2,7 @@
 
 namespace d3yii2\d3horizon\models;
 
-use d3yii2\d3horizon\components\ActiveRecord;
+use d3yii2\d3horizon\components\ApiModel;
 
 /**
  *
@@ -25,7 +25,7 @@ use d3yii2\d3horizon\components\ActiveRecord;
  * @property string $TELEFONS
  * @property integer $INTEGRATIONUSER
  */
-class Creditor extends ActiveRecord
+class Creditor extends ApiModel
 {
 
     public const TIPS_COMPANY = 3;

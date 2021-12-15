@@ -2,16 +2,18 @@
 
 namespace d3yii2\d3horizon\models;
 
-use d3yii2\d3horizon\components\ActiveRecord;
+use d3yii2\d3horizon\components\ApiModel;
 use d3yii2\d3horizon\components\TdmDocType;
+use d3yii2\d3horizon\interfaces\ApiActiveRecordInterface;
 
 /**
  *
- * @property integer $id
+ * Nomenklatūra(TNdmNom)
+ * @link https://horizon-rest-doc.visma.lv/lv/ApiDoc?ServiceCode=TNdmNom
+ *
  * @property integer $PK_DOKT
  * @property integer $PAMVID
- * @property integer $COUNTER
- * @property string $PK_NOM
+ * @property integer $PK_NOM
  * @property string $KODS
  * @property string $NOSAUK
  * @property integer $PK_RAZOT
@@ -36,7 +38,7 @@ use d3yii2\d3horizon\components\TdmDocType;
  *
  *
  */
-class TNdmNom extends ActiveRecord
+class TNdmNom extends ApiModel implements ApiActiveRecordInterface
 {
 
     public function init()
@@ -45,89 +47,98 @@ class TNdmNom extends ActiveRecord
         $this->PK_DOKT = TdmDocType::NNMK_NOMENKLATURA;
     }
 
-    public function rules()
+    public function attributes(): array
     {
-        return [
-            ['id','integer'],
-            ['PK_DOKT','integer'],
-            ['PAMVID','integer'],
-            ['COUNTER','integer'],
-            ['KODS','string', 'max' => 10],
-            ['NOSAUK','string','max' => 200],
-            ['PK_NOMGR','integer'],
-            ['PK_LIKME','integer'],
-            ['PK_DNORGRP','integer'],
-            ['STATUSS','integer'],
-            ['COUNTER','integer'],
-//            ['Size10StringType','string', 'max' => 10],
-//            ['Size200StringType','string', 'max' => 200],
-//            ['Size400StringType','string', 'max' => 400],
-            ['VIEN_KODS','string', 'max' => 5],
-            ['VIEN_NOSAUK','string', 'max' => 20],
-        ];
+
+        return array_merge(
+            parent::attributes(),
+            [
+                'PK_DOKT',
+                'PAMVID',
+                'COUNTER',
+                'PK_NOM',
+                'KODS',
+                'NOSAUK',
+                'PK_RAZOT',
+                'PK_LIKME',
+                'PK_DNORGRP',
+                'SERTIFS',
+                'PK_NOMGR',
+                'PK_VIEN',
+                'SVARS',
+                'BRUTO',
+                'NOSAUKSV',
+                'KAT_KODS',
+                'FILENAME',
+                'PK_NOMKAT',
+                'BAR_KODS',
+                'STATUSS',
+                'GAR',
+                'PLAT',
+                'AUGST',
+            ]
+        );
+    }
+
+    public function rules(): array
+    {
+        return array_merge(
+            parent::rules(),
+            [
+                ['PK_DOKT', 'integer'],
+                ['PAMVID', 'integer'],
+                ['COUNTER', 'integer'],
+                ['KODS', 'string', 'max' => 10],
+                ['NOSAUK', 'string', 'max' => 200],
+                ['PK_NOM', 'integer'],
+                ['PK_NOMGR', 'integer'],
+                ['PK_LIKME', 'integer'],
+                ['PK_DNORGRP', 'integer'],
+                ['STATUSS', 'integer'],
+                ['COUNTER', 'integer'],
+            ]
+        );
     }
 
     public function attributeLabels()
     {
-        return [
-            'PK_DOKT' => 'Dokumenta tips',
-            'COUNTER' => 'COUNTER',
-            'KODS' => 'Kods',
-            'NOSAUK' => 'Nosaukums',
-            'PK_NOMGR' => 'Nomenklatūras grupa',
-            'STATUSS' => 'Statuss',
-            'PK_LIKME' => 'PVN Likme',
-            'PK_DNORGRP' => 'Norēķinu grupa',
-        ];
+        return array_merge(
+            parent::attributeLabels(),
+            [
+                'PK_DOKT' => 'Dokumenta tips',
+                'COUNTER' => 'COUNTER',
+                'KODS' => 'Kods',
+                'NOSAUK' => 'Nosaukums',
+                'PK_NOMGR' => 'Nomenklatūras grupa',
+                'STATUSS' => 'Statuss',
+                'PK_LIKME' => 'PVN Likme',
+                'PK_DNORGRP' => 'Norēķinu grupa',
+            ]
+        );
     }
 
-    public function attributes(): array
+    public static function apiRequestQuery(): string
     {
-        return [
-            'id',
-            'PK_DOKT',
-            'PAMVID',
-            'COUNTER',
-            'PK_NOM',
-            'KODS',
-            'NOSAUK',
-            'PK_RAZOT',
-            'PK_LIKME',
-            'PK_DNORGRP',
-            'SERTIFS',
-            'PK_NOMGR',
-            'PK_VIEN',
-            'SVARS',
-            'BRUTO',
-            'NOSAUKSV',
-            'KAT_KODS',
-            'FILENAME',
-            'PK_NOMKAT',
-            'BAR_KODS',
-            'STATUSS',
-            'GAR',
-            'PLAT',
-            'AUGST',
-            'VIEN_KODS',
-            'VIEN_NOSAUK',
-        ];
+        return 'TNdmNomIzvSar/query';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function modelName(): string
+    public static function apiRequest(): string
     {
-        //return 'TNdmNom';
-        return 'TNdmNomIzvSar';
+        return 'TNdmNom';
+    }
+
+    public static function apiRequestInsert(): string
+    {
+        return 'TNdmNom/template/3';
     }
 
     public static function primaryKey(): array
     {
-        return ['id'];
+        return ['PK_NOM'];
     }
 
-
-
+    public static function apiTableQueryPrefix(): string
+    {
+        return 'N';
+    }
 }
-
