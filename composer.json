@@ -10,8 +10,8 @@
         }
     ],
     "require": {
+        "guzzlehttp/guzzle": "7.4.1",
         "yiisoft/yii2": "*",
-        "simialbi/yii2-rest-client": "*",
         "ext-simplexml": "*",
         "ext-libxml": "*"
     },
