@@ -4,7 +4,6 @@ namespace d3yii2\d3horizon\components;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
-use simialbi\yii2\rest\Exception as RestException;
 use yii\base\Component;
 use yii\helpers\Json;
 use yii\helpers\VarDumper;
