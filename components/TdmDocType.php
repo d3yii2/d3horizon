@@ -9,4 +9,7 @@ class TdmDocType
 
     /** @var int Kliiients */
     public const KKLK_KLIENTS = 3;
+
+    /** @var int Kred/Deb Klients */
+    public const KD_KLIENTS = 2;
 }

@@ -7,6 +7,8 @@ use d3yii2\d3horizon\models\TNdmNom;
 use d3yii2\d3horizon\Module;
 use d3yii2\d3horizon\models\Creditor;
 use yii\helpers\VarDumper;
+use d3yii2\d3horizon\models\TDdmCustomerKred;
+use d3yii2\d3horizon\models\TDdmCustomerDeb;
 
 /**
 * Class CreditorsController* @property Module $module
@@ -101,6 +103,13 @@ class CreditorController extends D3CommandController
         $creditor->PK_VALSTS = 1;
         $creditor->ADRESE = 'Garā iela 5, Alūksne LV5511';
         $creditor->save();
+    }
+
+    public function actionCustomerList()
+    {
+
+        $models = TDdmCustomerDeb::findAll(['KODS' => '850300002']);
+
     }
 }
 
