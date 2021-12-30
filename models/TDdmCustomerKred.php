@@ -47,6 +47,7 @@ class TDdmCustomerKred extends ApiModel implements ApiActiveRecordInterface
                 'PK_DOKT',
                 'PAMV_ID',
                 'COUNTER',
+                'STATUSS',
                 'KODS',
                 'NOSAUK',
                 'PK_KLIENTSM',
@@ -97,7 +98,7 @@ class TDdmCustomerKred extends ApiModel implements ApiActiveRecordInterface
 
     public static function apiRequestInsert(): string
     {
-        // not implemented
+        return 'TDdmCustomer/template/2';
     }
 
     public static function apiTableQueryPrefix(): string

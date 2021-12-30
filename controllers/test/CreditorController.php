@@ -108,8 +108,15 @@ class CreditorController extends D3CommandController
     public function actionCustomerList()
     {
 
-        $models = TDdmCustomerDeb::findAll(['KODS' => '850300002']);
+        $customer = new TDdmCustomerKred();
+        $customer->TIPS = 3;
+        $customer->NOSAUK = 'TEST-INSERT';
+        $customer->REG_NR = '40000000000';
+        $customer->ADRESE = 'Garā iela 5, Alūksne LV5511';
+        $customer->PVN_REGNR = 'LV40000000000';
+        $customer->STATUSS = 1;
 
+        $customer->save();
     }
 }
 
