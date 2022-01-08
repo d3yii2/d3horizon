@@ -12,4 +12,8 @@ class TdmDocType
 
     /** @var int Kred/Deb Klients */
     public const KD_KLIENTS = 2;
+
+    /** @var int Pavadzime */
+    public const PAVADZIME = 6;
+
 }

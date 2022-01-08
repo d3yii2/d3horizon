@@ -9,6 +9,7 @@ use d3yii2\d3horizon\models\Creditor;
 use yii\helpers\VarDumper;
 use d3yii2\d3horizon\models\TDdmCustomerKred;
 use d3yii2\d3horizon\models\TDdmCustomerDeb;
+use d3yii2\d3horizon\models\TNdmPvzIn;
 
 /**
 * Class CreditorsController* @property Module $module
@@ -117,6 +118,13 @@ class CreditorController extends D3CommandController
         $customer->STATUSS = 1;
 
         $customer->save();
+    }
+
+    public function actionPavadzimeList()
+    {
+
+        $model = TNdmPvzIn::findOne(['PAMV_ID' => '2710']);
+
     }
 }
 
