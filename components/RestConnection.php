@@ -2,6 +2,7 @@
 
 namespace d3yii2\d3horizon\components;
 
+use d3yii2\d3horizon\exceptions\RestException;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use yii\base\Component;
@@ -57,6 +58,7 @@ class RestConnection extends Component
      * @throws \yii\httpclient\Exception
      * @throws \simialbi\yii2\rest\Exception
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \d3yii2\d3horizon\controllers\exceptions\RestException
      */
     public function request(string $method, $path, array $data = [], array $get = [])
     {
@@ -141,5 +143,14 @@ class RestConnection extends Component
             return [];
         }
         return $this->_responseContent =  Json::decode($this->getResponseContent());
+    }
+
+    public function getResponseRawData()
+    {
+        if ($this->_rawResponse) {
+            return $this->_rawResponse;
+        }
+        $stream = $this->response->getBody();
+        return $this->_rawResponse =  $stream->getContents();
     }
 }

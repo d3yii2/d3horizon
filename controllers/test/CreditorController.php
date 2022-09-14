@@ -41,6 +41,7 @@ class CreditorController extends D3CommandController
         }
     }
 
+    /** straada */
     public function actionIndex()
     {
 
@@ -85,11 +86,12 @@ class CreditorController extends D3CommandController
 
     }
 
+    /** nestrada */
     public function actionIndex1()
     {
         //$res = Creditor::find()->one();
-        $res = Creditor::findOne(8);
-        //$res = Creditor::findAll([]);
+        //$res = Creditor::findOne(8);
+        $res = Creditor::findAll();
         print_r($res->attributes);
     }
 
@@ -106,6 +108,10 @@ class CreditorController extends D3CommandController
         $creditor->save();
     }
 
+    /**
+     * strada
+     * @return void
+     */
     public function actionCustomerList()
     {
 
@@ -120,6 +126,15 @@ class CreditorController extends D3CommandController
         $customer->save();
     }
 
+    /** straadaa */
+    public function actionDescription()
+    {
+
+        $customer = new TDdmCustomerKred();
+        echo VarDumper::dumpAsString($customer->getDescription());
+    }
+
+    /** straadaa */
     public function actionPavadzimeList()
     {
 

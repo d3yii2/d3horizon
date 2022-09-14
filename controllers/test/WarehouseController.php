@@ -15,7 +15,9 @@ class WarehouseController extends D3CommandController
 {
     /**
      * default action
+     * nestraadaa
      * @return int
+     *
      */
     public function actionIndex()
     {

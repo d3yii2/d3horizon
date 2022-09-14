@@ -100,7 +100,6 @@ class Connection extends \simialbi\yii2\rest\Connection
         Yii::debug($this->handler->baseUrl . '/' . $path, __METHOD__ . '-url');
         Yii::debug($data, __METHOD__ . '-data');
         Yii::debug($headers, __METHOD__ . '-headers');
-        
         // By unknown  reason base auth header is still missing after this.
         $request = call_user_func([$this->handler, $method], $url, $data, $headers);
         

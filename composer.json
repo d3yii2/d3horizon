@@ -11,6 +11,7 @@
     ],
     "require": {
         "guzzlehttp/guzzle": "7.4.5",
+        "simialbi/yii2-rest-client": "2.0.0",
         "yiisoft/yii2": "*",
         "ext-simplexml": "*",
         "ext-libxml": "*"

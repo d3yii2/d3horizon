@@ -3,6 +3,7 @@
 namespace d3yii2\d3horizon\components;
 
 use yii\db\ActiveQuery;
+use yii\helpers\VarDumper;
 
 /**
  * Class RestQuery
@@ -27,13 +28,17 @@ class ApiActiveQuery extends ActiveQuery
         /** @var \d3yii2\d3horizon\interfaces\ApiActiveRecordInterface $class */
         $class = $this->modelClass;
         $primaryKey = $class::primaryKey()[0];
-        if (count($this->where) === 1 && isset($this->where[$primaryKey])) {
+        $apiRequestRecord = $class::apiRequestRecord();
+        if (count($this->where) === 1
+            && isset($this->where[$primaryKey])
+//            && substr_compare($apiRequestRecord, '/query', -6) !== 0
+        ) {
 
-            if (!$db->request('GET', $class::apiRequest() . '/' . $this->where[$primaryKey])) {
+
+            if (!$db->request('GET', $apiRequestRecord . '/' . $this->where[$primaryKey])) {
                 return null;
             }
             $responseContentData = $db->getResponseData();
-
             if (!$row = $responseContentData['entity'] ?? false) {
                 return null;
             }
@@ -174,5 +179,4 @@ class ApiActiveQuery extends ActiveQuery
         }
         return $models;
     }
-
 }

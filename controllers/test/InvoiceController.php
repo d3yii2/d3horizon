@@ -13,12 +13,13 @@ use yii\console\ExitCode;
 class InvoiceController extends D3CommandController
 {
     /**
+     * nestraadaa
      * default action
      * @return int
      */
     public function actionIndex()
     {
-        /** @var simialbi\yii2\rest\ActiveRecord $res */
+        /** @var \simialbi\yii2\rest\ActiveRecord $res */
         $res = Invoice::find()->one();
         
         print_r($res->getAttributes());

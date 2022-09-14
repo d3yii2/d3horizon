@@ -5,7 +5,6 @@ namespace d3yii2\d3horizon\components;
 use Yii;
 use yii\db\BaseActiveRecord;
 use yii\helpers\Json;
-use yii\helpers\VarDumper;
 
 /**
  * @property integer $COUNTER
@@ -204,7 +203,7 @@ class ApiModel extends BaseActiveRecord
     /**
      * @throws \yii\base\InvalidConfigException
      */
-    public static function findAll($condition)
+    public static function findAll($condition): ?array
     {
         /** @var \d3yii2\d3horizon\interfaces\ApiActiveRecordInterface $modelClass */
         $modelClass = static::class;
@@ -239,5 +238,44 @@ class ApiModel extends BaseActiveRecord
             return null;
         }
         return 1;
+    }
+
+    /**
+     * @throws \yii\httpclient\Exception
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \simialbi\yii2\rest\Exception
+     */
+    public function getDescription()
+    {
+
+        $connection = $this->getRestConnection();
+        $modelClass = static::class;
+        $path = $modelClass::apiRequest();
+        if (!$connection->request('GET',$path)) {
+            return null;
+        }
+        return $connection->getResponseData();
+    }
+
+    public function getDescriptionDetailed()
+    {
+
+        $connection = $this->getRestConnection();
+        $modelClass = static::class;
+        $path = $modelClass::apiRequest();
+        if (!$connection->request('OPTIONS',$path)) {
+            return null;
+        }
+        return $connection->getResponseRawData();
+    }
+
+    public function getDtata(string $method, string $request )
+    {
+
+        $connection = $this->getRestConnection();
+        if (!$connection->request($method,$request)) {
+            return null;
+        }
+        return $connection->getResponseRawData();
     }
 }
