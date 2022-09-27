@@ -278,4 +278,45 @@ class ApiModel extends BaseActiveRecord
         }
         return $connection->getResponseRawData();
     }
+
+    public static function prefixFieldSeparator(): string
+    {
+        return '_';
+    }
+
+    public function getXsd()
+    {
+        $modelClass = static::class;
+        $apiRequest = $modelClass::apiRequest();
+        return $this->getDtata('GET', $apiRequest . '/' . $apiRequest . '.xsd');
+    }
+
+    public function getWadl()
+    {
+        $modelClass = static::class;
+        $apiRequest = $modelClass::apiRequest();
+        return $this->getDtata('GET', $apiRequest . '/' . $apiRequest . '.wadl');
+    }
+
+    public function getDefault()
+    {
+        $modelClass = static::class;
+        $apiRequest = $modelClass::apiRequest();
+        return $this->getDtata('GET', $apiRequest . '/default');
+    }
+
+    public function getTemplatesList()
+    {
+        $modelClass = static::class;
+        $apiRequest = $modelClass::apiRequest();
+        return $this->getDtata('GET', $apiRequest . '/template');
+    }
+
+    public function getTemplate(int $id)
+    {
+        $modelClass = static::class;
+        $apiRequest = $modelClass::apiRequest();
+        return $this->getDtata('GET', $apiRequest . '/template/' . $id);
+    }
+
 }

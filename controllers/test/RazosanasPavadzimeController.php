@@ -35,18 +35,15 @@ class RazosanasPavadzimeController extends D3CommandController
     public function actionIndexDefault()
     {
         $model = new TNdmPvzRaz();
-        echo VarDumper::dumpAsString(Json::decode($model->getDtata('GET', 'TNdmRecSar/default')));
+        echo VarDumper::dumpAsString(Json::decode($model->getDefault()));
 
     }
 
     /** straadaa */
     public function actionFindOne(int $id = 3)
     {
-//        $model = new TNdmRecSar();
-//        echo VarDumper::dumpAsString(Json::decode($model->getDtata('GET', 'TNdmRecSar/default')));
-//        $r = TNdmRecSar::findOne(['KODS' => 'KAV1']);
         $r = TNdmPvzRaz::findOne($id);
-        VarDumper::dumpAsString($r);
+        echo VarDumper::dumpAsString($r);
     }
 
     /** straadaa */
@@ -54,12 +51,6 @@ class RazosanasPavadzimeController extends D3CommandController
     {
         $model = new TNdmRecSar();
         echo VarDumper::dumpAsString(Json::decode($model->getDtata('GET', 'TNdmRecSar/sync')));
-    }
-
-    public function actionTemplatesList(): void
-    {
-        $model = new TNdmPvzRaz();
-        echo VarDumper::dumpAsString(Json::decode($model->getDtata('GET', 'TNdmPvzRaz/template')));
     }
 
     /**
@@ -70,19 +61,25 @@ class RazosanasPavadzimeController extends D3CommandController
     public function actionTemplate(int $id = 37): void
     {
         $model = new TNdmPvzRaz();
-        echo VarDumper::dumpAsString(Json::decode($model->getDtata('GET', 'TNdmPvzRaz/template/' . $id)));
+        echo VarDumper::dumpAsString(Json::decode($model->getTemplate($id)));
+    }
+
+    public function actionTemplatesList(): void
+    {
+        $model = new TNdmPvzRaz();
+        echo VarDumper::dumpAsString(Json::decode($model->getTemplatesList()));
     }
 
     public function actionWadl(): void
     {
         $model = new TNdmPvzRaz();
-        echo VarDumper::dumpAsString($model->getDtata('GET', 'TNdmPvzRaz/TNdmPvzRaz.wadl'));
+        echo VarDumper::dumpAsString($model->getWadl());
     }
 
     public function actionXsd(): void
     {
         $model = new TNdmPvzRaz();
-        echo VarDumper::dumpAsString($model->getDtata('GET', 'TNdmPvzRaz/TNdmPvzRaz.xsd'));
+        echo VarDumper::dumpAsString($model->getXsd());
     }
 
     public function actionXxx(): void

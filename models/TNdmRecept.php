@@ -16,14 +16,21 @@ use d3yii2\d3horizon\interfaces\ApiActiveRecordInterface;
  * @property string $NOSAUK
  *
  */
-class TNdmRecSar extends ApiModel implements ApiActiveRecordInterface
+class TNdmRecept extends ApiModel implements ApiActiveRecordInterface
 {
 
-//    public function init()
-//    {
-//        parent::init();
-//        $this->PK_DOKT = TdmDocType::KD_KLIENTS;
-//    }
+    /** @var \d3yii2\d3horizon\models\TdmNRecRows1[] */
+    public $dmNRecRows1 = [];
+
+    public static function relatedEntities()
+    {
+        return [
+            [
+                'entityName' => 'dmNRecRows1',
+                'entityModelClass' => TdmNRecRows1::class
+            ]
+        ];
+    }
 
     public function attributes(): array
     {
@@ -57,7 +64,7 @@ class TNdmRecSar extends ApiModel implements ApiActiveRecordInterface
 
     public static function apiRequest(): string
     {
-        return 'TNdmRecSar';
+        return 'TNdmRecept';
     }
 
     public static function apiRequestRecord(): string
@@ -78,5 +85,19 @@ class TNdmRecSar extends ApiModel implements ApiActiveRecordInterface
     public static function apiTableQueryPrefix(): string
     {
         return 'R';
+    }
+
+    public static function findOneBySarazotasNomenklaturas(int $pkNom): ?TNdmRecept
+    {
+        foreach (self::findAll([]) as $recept) {
+            /** @var self $receptesEntity */
+            $receptesEntity = self::findOne($recept->PK_REC);
+            foreach ($receptesEntity->dmNRecRows1 as $row1) {
+                if ((int)$row1->PK_NOM === $pkNom) {
+                    return $receptesEntity;
+                }
+            }
+        }
+        return null;
     }
 }

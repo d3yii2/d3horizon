@@ -24,8 +24,8 @@ use d3yii2\d3horizon\interfaces\ApiActiveRecordInterface;
  * @property integer $PK_DNORGRP
  * @property float $SVARS
  * @property float $BRUTO
- * @property stting $NOSAUKSV
- * @property stting $KAT_KODS
+ * @property string $NOSAUKSV
+ * @property string $KAT_KODS
  * @property string $FILENAME
  * @property int $PK_NOMKAT
  * @property string $BAR_KODS

@@ -44,7 +44,29 @@ class ApiActiveQuery extends ActiveQuery
             }
 
             $models = $this->populate([$row]);
-            return reset($models) ?: null;
+            $model = reset($models);
+            if (method_exists($class,'relatedEntities')) {
+                foreach ($class::relatedEntities() as $entityDef) {
+                    $entityName = $entityDef['entityName'];
+                    $model->$entityName = [];
+                    if ($entityRows = $row[$entityName]['row']??null) {
+                        $entityModelClass = $entityDef['entityModelClass'];
+                        foreach ($entityRows as $eRow) {
+                            foreach ($eRow as $eRowKey => $eRowValue) {
+                                if (is_array($eRowValue)) {
+                                    preg_match('#/(\d+)$#',$eRowValue['href'], $match);
+                                    $eRow[$eRowKey] = $match[1];
+                                }
+                            }
+                            $entityModel = new $entityModelClass();
+                            $entityModel->load($eRow,'');
+                            $model->$entityName[] = $entityModel;
+                        }
+                    }
+                }
+            }
+
+            return $model;
         }
 
         $this->limit(1);
@@ -57,7 +79,10 @@ class ApiActiveQuery extends ActiveQuery
         if (!$rows = $this->getResponseRows($responseContentData)) {
             return null;
         }
-        return $this->populate([reset($rows)]);
+        $responseRows = [reset($rows)];
+        $models = $this->populate($responseRows);
+
+        return reset($models) ?: null;
     }
 
     private function getDb()
@@ -118,15 +143,16 @@ class ApiActiveQuery extends ActiveQuery
         } else {
             $selectColumns = $this->select;
         }
+        $separator = $class::prefixFieldSeparator();
         foreach ($selectColumns as $attribute) {
-            $columns[] = $tablePrefix . '_' . $attribute;
+            $columns[] = $tablePrefix . $separator . $attribute;
         }
         $get['columns'] = implode(',', $columns);
 
         if ($this->where) {
             $filter = [];
             foreach ($this->where as $field => $value) {
-                $filter[] = '(' . $tablePrefix . '_' . $field . ' eq ' . $value . ')';
+                $filter[] = '(' . $tablePrefix . $separator . $field . ' eq ' . $value . ')';
             }
             $get['filter'] = implode(' and ', $filter);
         }
