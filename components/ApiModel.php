@@ -3,6 +3,7 @@
 namespace d3yii2\d3horizon\components;
 
 use Yii;
+use yii\base\Exception;
 use yii\db\BaseActiveRecord;
 use yii\helpers\Json;
 
@@ -29,6 +30,42 @@ class ApiModel extends BaseActiveRecord
         ];
     }
 
+    /**
+     * @throws \yii\base\InvalidConfigException
+     */
+    public static function findAll($condition): ?array
+    {
+        /** @var \d3yii2\d3horizon\interfaces\ApiActiveRecordInterface $modelClass */
+        $modelClass = static::class;
+        return $modelClass::find()
+            ->andWhere($condition)
+            ->all();
+    }
+
+    /**
+     * @throws \simialbi\yii2\rest\Exception
+     * @throws \yii\db\Exception
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\httpclient\Exception|\GuzzleHttp\Exception\GuzzleException
+     */
+    public static function findOne($condition)
+    {
+        /** @var \d3yii2\d3horizon\interfaces\ApiActiveRecordInterface $modelClass */
+
+        if (!is_array($condition)) {
+            $modelClass = static::class;
+            $model = new $modelClass;
+            $primaryKey = $model::primaryKey()[0];
+            return $model::find()
+                ->andWhere([$primaryKey => $condition])
+                ->one();
+        }
+        $modelClass = static::class;
+        return $modelClass::find()
+            ->andWhere($condition)
+            ->one();
+    }
+
     public function save($runValidation = true, $attributeNames = null)
     {
         if ($this->getIsNewRecord()) {
@@ -49,6 +86,16 @@ class ApiModel extends BaseActiveRecord
         return $this->insertInternal($attributes);
     }
 
+    public function update($runValidation = true, $attributes = null)
+    {
+        if ($runValidation && !$this->validate($attributes)) {
+            Yii::info('Model not inserted due to validation error.', __METHOD__);
+            return false;
+        }
+
+        return $this->updateInternal($attributes);
+    }
+
     private function insertInternal($attributes = null)
     {
         if (!$this->beforeSave(true)) {
@@ -56,25 +103,20 @@ class ApiModel extends BaseActiveRecord
         }
         /** @var \d3yii2\d3horizon\interfaces\ApiActiveRecordInterface $modelClass */
         $modelClass = static::class;
-        $insertData = [];
-        foreach ($this->getDirtyAttributes($attributes) as $attributeName => $attributeValue) {
-            if ($attributeValue) {
-                $insertData[$attributeName] = $attributeValue;
-            }
-        }
-        $values = ['entity' => $insertData];
+        $insertData = $this->getVismaData();
+
         $connection = $this->getRestConnection();
-        if (!$response = $connection->request('POST', $modelClass::apiRequestInsert(), $values)) {
-            return false;
+        if (!$response = $connection->request(
+            'POST',
+            $modelClass::apiRequestInsert(),
+            ['entity' => $insertData]
+        )) {
+            throw new Exception('Nevar pieslegties REST (insertt)');
+
         }
-        $stream = $response->getBody();
-        if (!$responseContent = $stream->getContents()) {
-            return false;
-        }
-        $responseContentData = Json::decode($responseContent);
+        $responseContentData = $connection->getResponseData();
         if (!$href = ($responseContentData['link']['href'] ?? false)) {
-            $this->addError('id', 'Can not get id from response');
-            return false;
+            throw new Exception('Can not get id from response');
         }
         $id = substr($href, strrpos($href, '/') + 1);
         $primaryKey = $modelClass::primaryKey()[0];
@@ -104,8 +146,7 @@ class ApiModel extends BaseActiveRecord
         /** @var \d3yii2\d3horizon\interfaces\ApiActiveRecordInterface $modelClass */
         $modelClass = static::class;
         $primaryKey = $this::primaryKey()[0];
-        $model = $modelClass::findOne($this->$primaryKey);
-        return $model->COUNTER;
+        return $modelClass::findOne($this->$primaryKey)->COUNTER;
     }
 
     public function updateInternal($attributes = null)
@@ -117,7 +158,7 @@ class ApiModel extends BaseActiveRecord
         $modelClass = static::class;
         $primaryKey = $modelClass::primaryKey()[0];
         $oldValues = $this->attributes;
-        $updateData = $this->getDirtyAttributes($attributes);
+        $updateData = $this->getVismaData();
         $updateData[$primaryKey] = $this->$primaryKey;
         $updateData['COUNTER'] = $this->getCounterValue();
         $values = ['resource' => ['entity' => $updateData]];
@@ -125,26 +166,17 @@ class ApiModel extends BaseActiveRecord
         $path = $modelClass::apiRequest() . '/' . $this->$primaryKey;
 
         $connection = $this->getRestConnection();
-        if (!$response = $connection->request('POST', $path, $values)) {
-            return false;
+        if (!$response = $connection->request(
+            'POST',
+            $path,
+            $values
+        )) {
+            throw new Exception('Nevar pieslegties REST (update)');
         }
-        $stream = $response->getBody();
-        if (!$responseContent = $stream->getContents()) {
-            return false;
-        }
-        $responseContentData = Json::decode($responseContent);
-        if (!$href = ($responseContentData['link']['href'] ?? false)) {
-            $this->addError('id', 'Can not get id from response');
-            return false;
-        }
-        $id = substr($href, strrpos($href, '/') + 1);
-        $primaryKey = $modelClass::primaryKey()[0];
-        $this->$primaryKey = $id;
 
-        $changedAttributes = array_fill_keys(array_keys($updateData), null);
-        $this->setOldAttributes($oldValues);
-        $this->afterSave(true, $changedAttributes);
-
+        if ($responseContentData = $connection->getResponseData()) {
+            throw new Exception('Update error: ' . Json::encode($responseContentData));
+        }
         return true;
     }
 
@@ -173,43 +205,6 @@ class ApiModel extends BaseActiveRecord
     public static function find(): ApiActiveQuery
     {
         return Yii::createObject(ApiActiveQuery::class, [static::class]);
-    }
-
-
-    /**
-     * @throws \simialbi\yii2\rest\Exception
-     * @throws \yii\db\Exception
-     * @throws \yii\base\InvalidConfigException
-     * @throws \yii\httpclient\Exception|\GuzzleHttp\Exception\GuzzleException
-     */
-    public static function findOne($condition)
-    {
-        /** @var \d3yii2\d3horizon\interfaces\ApiActiveRecordInterface $modelClass */
-
-        if (!is_array($condition)) {
-            $modelClass = static::class;
-            $model = new $modelClass;
-            $primaryKey = $model::primaryKey()[0];
-            return $model::find()
-                ->andWhere([$primaryKey => $condition])
-                ->one();
-        }
-        $modelClass = static::class;
-        return $modelClass::find()
-            ->andWhere($condition)
-            ->one();
-    }
-
-    /**
-     * @throws \yii\base\InvalidConfigException
-     */
-    public static function findAll($condition): ?array
-    {
-        /** @var \d3yii2\d3horizon\interfaces\ApiActiveRecordInterface $modelClass */
-        $modelClass = static::class;
-        return $modelClass::find()
-            ->andWhere($condition)
-            ->all();
     }
 
     public static function getDb()
@@ -316,7 +311,82 @@ class ApiModel extends BaseActiveRecord
     {
         $modelClass = static::class;
         $apiRequest = $modelClass::apiRequest();
-        return $this->getDtata('GET', $apiRequest . '/template/' . $id);
+       // return $this->getDtata('GET', $apiRequest . '/template/' . $id);
+        $responseData =  Json::decode($this->getDtata('GET', $apiRequest . '/template/' . $id));
+        if (!$entityData = $responseData['entity']??null) {
+            return null;
+        }
+        $models = self::find()->populate([$entityData]);
+        $model = reset($models);
+        $model->oldAttributes = null;
+        return $model;
     }
 
+    /**
+     * atgriezj relaciju tabulu laukus. Lauki ar prefixiem
+     * [
+     * 'relacijutabula1' => ['lauks11', 'lauks12'],
+     * 'relacijutabula2' => ['lauks21', 'lauks22'],
+     * ]
+     * izmanto, lai neliktu bazes tabulas prefixus
+     * @return array
+     */
+    public static function vismaRelations(): array
+    {
+        return [];
+    }
+
+    /**
+     * related tabulām atributiem ir jau prefixi un neliek klāt jaunu
+     * @param string $attribute
+     * @return string
+     */
+    public static function addPrefixToAttribute(string $attribute): string
+    {
+        $modelClass = static::class;
+        foreach ($modelClass::vismaRelations() as $relList) {
+            foreach ($relList['fields'] as $fieldName) {
+                if ($relList['prefix'] . '_' . $fieldName === $attribute) {
+                    return $attribute;
+                }
+            }
+        }
+        return $modelClass::apiTableQueryPrefix()
+            . $modelClass::prefixFieldSeparator()
+            . $attribute;
+    }
+
+    /**
+     * @return array
+     */
+    private function getVismaData(): array
+    {
+        $modelClass = static::class;
+        $insertData = $this->dirtyAttributes;
+//        foreach ($this->dirtyAttributes as $attributeName => $attributeValue) {
+//            if ($attributeValue) {
+//                $insertData[$attributeName] = $attributeValue;
+//            }
+//        }
+
+        if (method_exists($modelClass, 'relatedEntities')) {
+            foreach ($modelClass::relatedEntities() as $entityDef) {
+                $entityName = $entityDef['entityName'];
+                if (!$this->$entityName) {
+                    continue;
+                }
+                $entityRecords = [];
+                /** @var \yii\base\Model $entityRecords */
+                foreach ($this->$entityName as $entityRecord) {
+                    if ($entityRecord->dirtyAttributes) {
+                        $entityRecords[] = $entityRecord->dirtyAttributes;
+                    }
+                }
+                if ($entityRecords) {
+                    $insertData[$entityName]['row'] = $entityRecords;
+                }
+            }
+        }
+        return $insertData;
+    }
 }

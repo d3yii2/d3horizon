@@ -24,8 +24,11 @@ use yii\base\Exception;
  * @property int $TIPS Nummurs
  * @property int $PK_KLIENTS Cehs
  *
+ * TNdmPvzSar_TNdmPvzSarAddition085Structure
+ * @property float $KOP_SUMMA_IZIEP Cehs
+ *
  */
-class TNdmPvzRaz extends ApiModel implements ApiActiveRecordInterface
+class TNdmPvzSar extends ApiModel implements ApiActiveRecordInterface
 {
 
     public const STATUSS_APSTRADE = -2;
@@ -49,18 +52,6 @@ class TNdmPvzRaz extends ApiModel implements ApiActiveRecordInterface
     /** @var \d3yii2\d3horizon\models\TNdmPvzRazQrySubRindas[] izmatotas partijas nomenklatura */
     public $qrySubRindas = [];
 
-    /**
-     * @throws \yii\db\Exception
-     * @throws \simialbi\yii2\rest\Exception
-     * @throws \yii\base\InvalidConfigException
-     * @throws \yii\httpclient\Exception
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public static function findByPkDok(int $pkDok): self
-    {
-        return parent::findOne($pkDok);
-    }
-
     public function attributes(): array
     {
 
@@ -78,6 +69,7 @@ class TNdmPvzRaz extends ApiModel implements ApiActiveRecordInterface
                 'DOK_NR',
                 'TIPS',
                 'PK_KLIENTS',
+                'KOP_SUMMA_IZIEP'
             ]
         );
     }
@@ -91,50 +83,41 @@ class TNdmPvzRaz extends ApiModel implements ApiActiveRecordInterface
                 ['DOK_NR', 'string', 'max' => 25],
                 [
                     [
-                        'PK_DOKT', 'PAMV_ID', 'PK_DOK',
-                        'PK_IESTADE', 'PK_ESPATS', 'PK_VAL',
+                        'PK_DOKT','PAMV_ID','PK_DOK',
+                        'PK_IESTADE','PK_ESPATS','PK_VAL',
                         'TIPS', 'PK_KLIENTS'
                     ],
                     'integer'
                 ],
+                [['KOP_SUMMA_IZIEP'],'float']
             ]
         );
     }
 
-    public static function relatedEntities(): array
+    public static function vismaRelations(): array
     {
         return [
-            [
-                'entityName' => 'tblRindas',
-                'entityModelClass' => tblRindas::class
-            ],
-            [
-                'entityName' => 'tblRindasR',
-                'entityModelClass' => tblRindasR::class
-            ],
-            [
-                'entityName' => 'qrySubRindas',
-                'entityModelClass' => TNdmPvzRazQrySubRindas::class
+            'TNdmPvzSarAddition085' => [
+                'parent' => 'D',
+                'prefix' => 'KOP',
+                'fields' => ['SUMMA_IZIEP']
             ],
         ];
     }
 
-    /**
-     * @throws \yii\base\Exception
-     */
     public static function apiRequestQuery(): string
     {
-        throw new Exception('Query not exist');
+        return 'TNdmPvzSar/query';
     }
 
     public static function apiRequest(): string
     {
-        return 'TNdmPvzRaz';
+        return 'TNdmPvzSar';
     }
 
     public static function apiRequestRecord(): string
     {
-        return 'TNdmPvzRaz';
+        return '';
     }
 
     public static function primaryKey(): array
@@ -144,11 +127,11 @@ class TNdmPvzRaz extends ApiModel implements ApiActiveRecordInterface
 
     public static function apiRequestInsert(): string
     {
-        return 'TNdmPvzRaz/template/37';
+        return 'TNdmPvzSar/template/37';
     }
 
     public static function apiTableQueryPrefix(): string
     {
-        return 'NRAZ';
+        return 'D';
     }
 }

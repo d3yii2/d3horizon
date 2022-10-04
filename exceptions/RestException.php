@@ -10,6 +10,6 @@ class RestException extends Exception
     public function __construct(string $responseContent, array $headers)
     {
         $response = Json::decode($responseContent);
-        parent::__construct($response['message']);
+        parent::__construct($response['class'] . ': ' . $response['message']);
     }
 }

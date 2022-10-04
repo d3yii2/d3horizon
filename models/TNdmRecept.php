@@ -19,6 +19,9 @@ use d3yii2\d3horizon\interfaces\ApiActiveRecordInterface;
 class TNdmRecept extends ApiModel implements ApiActiveRecordInterface
 {
 
+    /** @var \d3yii2\d3horizon\models\TdmNRecRows[] */
+    public $dmNRecRows = [];
+
     /** @var \d3yii2\d3horizon\models\TdmNRecRows1[] */
     public $dmNRecRows1 = [];
 
@@ -26,9 +29,13 @@ class TNdmRecept extends ApiModel implements ApiActiveRecordInterface
     {
         return [
             [
+                'entityName' => 'dmNRecRows',
+                'entityModelClass' => TdmNRecRows::class
+            ],
+            [
                 'entityName' => 'dmNRecRows1',
                 'entityModelClass' => TdmNRecRows1::class
-            ]
+            ],
         ];
     }
 
@@ -92,8 +99,8 @@ class TNdmRecept extends ApiModel implements ApiActiveRecordInterface
         foreach (self::findAll([]) as $recept) {
             /** @var self $receptesEntity */
             $receptesEntity = self::findOne($recept->PK_REC);
-            foreach ($receptesEntity->dmNRecRows1 as $row1) {
-                if ((int)$row1->PK_NOM === $pkNom) {
+            foreach ($receptesEntity->dmNRecRows as $row) {
+                if ((int)$row->PK_NOM === $pkNom) {
                     return $receptesEntity;
                 }
             }

@@ -3,7 +3,7 @@
 namespace d3yii2\d3horizon\components;
 
 use yii\db\ActiveQuery;
-use yii\helpers\VarDumper;
+
 
 /**
  * Class RestQuery
@@ -29,9 +29,9 @@ class ApiActiveQuery extends ActiveQuery
         $class = $this->modelClass;
         $primaryKey = $class::primaryKey()[0];
         $apiRequestRecord = $class::apiRequestRecord();
-        if (count($this->where) === 1
+        if ($apiRequestRecord
+            && count($this->where) === 1
             && isset($this->where[$primaryKey])
-//            && substr_compare($apiRequestRecord, '/query', -6) !== 0
         ) {
 
 
@@ -60,6 +60,7 @@ class ApiActiveQuery extends ActiveQuery
                             }
                             $entityModel = new $entityModelClass();
                             $entityModel->load($eRow,'');
+                            $entityModel->isNewRecord = false;
                             $model->$entityName[] = $entityModel;
                         }
                     }
@@ -88,8 +89,7 @@ class ApiActiveQuery extends ActiveQuery
     private function getDb()
     {
         $class = $this->modelClass;
-        $model = new $class();
-        return $model->getRestConnection();
+        return (new $class())->getRestConnection();
     }
 
     public function all($db = null)
@@ -122,12 +122,47 @@ class ApiActiveQuery extends ActiveQuery
         $class = $this->modelClass;
         $tablePrefix = $class::apiTableQueryPrefix();
         foreach ($rows as $rowKey => $row) {
-            $tableRow = $row[$tablePrefix];
-            $rows[$rowKey] = $tableRow;
+            $rows[$rowKey] = $this->getResponseRowAttributes($tablePrefix, $row[$tablePrefix], true);
         }
         return $rows;
     }
 
+    private function getResponseRowAttributes(string $prefix, array $row, bool $isBase = false): array
+    {
+
+        $class = new $this->modelClass;
+        $attributes = [];
+        $childRelations = [];
+        foreach ($class::vismaRelations() as $relTable) {
+            if ($relTable['parent'] === $prefix) {
+                $childRelations[$relTable['prefix']] = $relTable['fields'];
+            }
+        }
+
+        $modelAttributes = $class->attributes();
+
+        foreach ($row as $name => $value) {
+
+            if ($isBase && in_array($name, $modelAttributes, true)) {
+                $attributes[$name] = $value;
+                continue;
+            }
+            if (!$isBase) {
+                $relName = $prefix . '_' . $name;
+                if (in_array($relName, $modelAttributes, true)) {
+                    $attributes[$relName] = $value;
+                    continue;
+                }
+            }
+            if (isset($childRelations[$name])) {
+                foreach ($this->getResponseRowAttributes($name, $value) as $rName => $rvalue) {
+                    $attributes[$rName] = $rvalue;
+                }
+            }
+
+        }
+        return $attributes;
+    }
 
     private function buildQuery()
     {
@@ -136,25 +171,35 @@ class ApiActiveQuery extends ActiveQuery
         $model = new $class();
 
         $get = [];
-        $tablePrefix = $class::apiTableQueryPrefix();
         $columns = [];
         if (!$this->select) {
             $selectColumns = $model->attributes();
         } else {
             $selectColumns = $this->select;
         }
-        $separator = $class::prefixFieldSeparator();
         foreach ($selectColumns as $attribute) {
-            $columns[] = $tablePrefix . $separator . $attribute;
+            $columns[] = $class::addPrefixToAttribute($attribute);
         }
         $get['columns'] = implode(',', $columns);
 
         if ($this->where) {
             $filter = [];
             foreach ($this->where as $field => $value) {
-                $filter[] = '(' . $tablePrefix . $separator . $field . ' eq ' . $value . ')';
+                if (is_int($field)) {
+                    $filter[] = $value;
+                    continue;
+                }
+                $filter[] = '(' . $class::addPrefixToAttribute($field) . ' eq ' . $value . ')';
             }
             $get['filter'] = implode(' and ', $filter);
+        }
+        if ($this->orderBy) {
+            $orderBy = [];
+            foreach ($this->orderBy as $fieldName => $direction) {
+                $orderBy[] = $class::addPrefixToAttribute($fieldName)
+                    . ' '
+                    . ($direction === SORT_ASC?'asc':'desc');
+            }
         }
         $get['limit'] = $this->limit;
 

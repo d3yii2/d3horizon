@@ -58,11 +58,12 @@ class RestConnection extends Component
      * @throws \yii\httpclient\Exception
      * @throws \simialbi\yii2\rest\Exception
      * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \d3yii2\d3horizon\controllers\exceptions\RestException
+     * @throws \d3yii2\d3horizon\exceptions\RestException
      */
     public function request(string $method, $path, array $data = [], array $get = [])
     {
         $this->_responseContent = null;
+        $this->_rawResponse = null;
         $this->response = null;
         $url = $this->baseUrl . '/' . $path;
         if (is_array($get)) {
@@ -82,8 +83,8 @@ class RestConnection extends Component
             $requestOptions[RequestOptions::BODY] = Json::encode($data);
         }
 
-        echo VarDumper::dumpAsString($requestOptions);
-        echo VarDumper::dumpAsString($url);
+        //echo VarDumper::dumpAsString($requestOptions);
+        //echo VarDumper::dumpAsString($url);
         try {
             $httpClient = new Client();
             /** @var \GuzzleHttp\Psr7\Response $response */
@@ -101,6 +102,9 @@ class RestConnection extends Component
         $statusCode = $this->response->getStatusCode();
 
         if ((string)$statusCode === '404') {
+            if (($this->getResponseData())) {
+                throw new RestException($this->getResponseContent(), $this->response->getHeaders());
+            }
             return false;
         }
         if (strncmp('20', $statusCode, 2) !== 0) {

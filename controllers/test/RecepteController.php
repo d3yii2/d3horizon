@@ -39,6 +39,41 @@ class RecepteController extends D3CommandController
     }
 
 
+    public function actionIndexDefault()
+    {
+        $model = new TNdmRecept();
+        echo VarDumper::dumpAsString($model->getDefault());
+    }
+
+    /**
+     * @throws \simialbi\yii2\rest\Exception
+     * @throws \yii\db\Exception
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\httpclient\Exception
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function actionFindOne(int $id)
+    {
+        /** @var TNdmRecept $model */
+        $model =  TNdmRecept::findOne($id);
+
+        echo VarDumper::dumpAsString($model->attributes) . PHP_EOL;
+        echo 'ROWS ' . PHP_EOL;
+        foreach ($model->dmNRecRows as $r) {
+            echo VarDumper::dumpAsString($r->attributes) . PHP_EOL;
+        }
+        echo 'ROWS1 ' . PHP_EOL;
+        foreach ($model->dmNRecRows1 as $r) {
+            echo VarDumper::dumpAsString($r->attributes) . PHP_EOL;
+        }
+    }
+
+    public function actionFindAll()
+    {
+        foreach (TNdmRecept::findAll([]) as $recept) {
+            $this->out(VarDumper::dumpAsString($recept->attributes));
+        }
+    }
 
     /** straadaa */
     public function actionExperiments()
@@ -59,11 +94,16 @@ class RecepteController extends D3CommandController
     public function actionE2()
     {
         $model = new TNdmRecept();
-        $data =  $model->getDtata('
-            GET',
-            'TNdmRecSar/query?columns=R_COUNTER%2CR_KODS%2CR_NOSAUK%2CR_PK_REC&filter=%28PK_NOM+eq+310%29&limit=1'
-        );
-        echo VarDumper::dumpAsString($data);
+        $rcepte = TNdmRecept::findOne(['KODS' => 10113]);
+        echo VarDumper::dumpAsString($rcepte->attributes) . PHP_EOL;
+        echo 'ROWS ' . PHP_EOL;
+        foreach ($rcepte->dmNRecRows as $r) {
+            echo VarDumper::dumpAsString($r->attributes) . PHP_EOL;
+        }
+        echo 'ROWS1 ' . PHP_EOL;
+        foreach ($rcepte->dmNRecRows1 as $r) {
+            echo VarDumper::dumpAsString($r->attributes) . PHP_EOL;
+        }
     }
 
     public function actionE3()

@@ -78,7 +78,7 @@ class TNdmNolSar extends ApiModel implements ApiActiveRecordInterface
 
     public static function apiRequestInsert(): string
     {
-        return 'TDdmCustomer/template/2';
+        return 'TNdmNolSar/template/2';
     }
 
     public static function apiTableQueryPrefix(): string

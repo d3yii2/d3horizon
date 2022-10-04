@@ -15,11 +15,11 @@ use yii\db\BaseActiveRecord;
  * @property integer $RN_VEIDS veids enum
  * @property integer $PK_NOL noliktava
  * @property integer $PK_NOM nomenklatura
- * @property integer $DAUDZ
  * @property string $N_BAR_KODS
+ * @property integer $DAUDZ
  *
  */
-class TdmNRecRows1 extends BaseActiveRecord
+class TdmNRecRows extends BaseActiveRecord
 {
 
     public const RN_VEIDS_NOMENKLATURA = 0;

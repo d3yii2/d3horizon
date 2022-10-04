@@ -126,6 +126,10 @@ class TNdmNom extends ApiModel implements ApiActiveRecordInterface
     {
         return 'TNdmNom';
     }
+    public static function apiRequestRecord(): string
+    {
+        return 'TNdmNom';
+    }
 
     public static function apiRequestInsert(): string
     {

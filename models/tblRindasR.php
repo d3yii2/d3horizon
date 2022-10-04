@@ -7,22 +7,24 @@ use yii\db\BaseActiveRecord;
 
 /**
  *
- * Receptes(TNdmRecSar)
+ * Receptes(TNdmRecSar) rindas - sarazjota produkcija
  * @link https://horizon-rest-doc.visma.lv/lv/ApiDoc?ServiceCode=TNdmRecSar
  *
- * @property integer $PK_RECP
- * @property integer $PK_REC  recepte
  * @property integer $RN_VEIDS veids enum
- * @property integer $PK_NOL noliktava
  * @property integer $PK_NOM nomenklatura
- * @property integer $DAUDZ
- * @property string $N_BAR_KODS
+ * @property integer $RAZ_VEIDS  recepte
+ * @property integer $DAUDZ daudzums
+ * @property integer $PK_NOL Noliktava
+ * @property float $SUMMA SUMMA
  *
  */
-class TdmNRecRows1 extends BaseActiveRecord
+class tblRindasR extends BaseActiveRecord
 {
 
     public const RN_VEIDS_NOMENKLATURA = 0;
+    public const RN_VEIDS_PAKALPOJUMS = 3;
+    public const RN_VEIDS_TEKSTS = 1;
+
 
     public function attributes(): array
     {
@@ -30,13 +32,12 @@ class TdmNRecRows1 extends BaseActiveRecord
         return array_merge(
             parent::attributes(),
             [
-                'PK_RECP',
-                'PK_REC',
                 'RN_VEIDS',
-                'PK_NOL',
                 'PK_NOM',
-                'N_BAR_KODS',
-                'DAUDZ'
+                'RAZ_VEIDS',
+                'DAUDZ',
+                'PK_NOL',
+                'SUMMA'
             ]
         );
     }
@@ -46,8 +47,8 @@ class TdmNRecRows1 extends BaseActiveRecord
         return array_merge(
             parent::rules(),
             [
-                [['PK_RECP','PK_REC','RN_VEIDS','PK_NOM','DAUDZ'], 'integer'],
-                ['N_BAR_KODS','string','max' => 30]
+                [['RN_VEIDS','PK_NOM','RAZ_VEIDS','DAUDZ','PK_NOL'], 'integer'],
+                ['SUMMA','number']
             ]
         );
     }
