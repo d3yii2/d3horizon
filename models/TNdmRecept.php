@@ -4,7 +4,7 @@ namespace d3yii2\d3horizon\models;
 
 use d3yii2\d3horizon\components\ApiModel;
 use d3yii2\d3horizon\interfaces\ApiActiveRecordInterface;
-
+use yii\db\Exception;
 
 /**
  *
@@ -94,6 +94,16 @@ class TNdmRecept extends ApiModel implements ApiActiveRecordInterface
         return 'R';
     }
 
+    /**
+     * @param int $pkNom
+     * @return \d3yii2\d3horizon\models\TNdmRecept|null
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \simialbi\yii2\rest\Exception
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\db\Exception
+     * @throws \yii\httpclient\Exception
+     * @deprecated parak leni strada, kamer atrod datus
+     */
     public static function findOneBySarazotasNomenklaturas(int $pkNom): ?TNdmRecept
     {
         foreach (self::findAll([]) as $recept) {
@@ -106,5 +116,44 @@ class TNdmRecept extends ApiModel implements ApiActiveRecordInterface
             }
         }
         return null;
+    }
+
+
+    /**
+     * No receptes izveido razosanas pavadzimi
+     * @param int $noliktava
+     * @param string|null $pavadzimesNumurs
+     * @return int
+     * @throws \yii\db\Exception
+     */
+    public function razot(int $noliktava, string $pavadzimesNumurs = null): int
+    {
+        $pvzRazModel = new TNdmPvzRaz();
+        $pvzRaz = $pvzRazModel->getTemplate(37);
+        $pvzRaz->PK_ESPATS =$noliktava;
+        $pvzRaz->DOK_NR = $pavadzimesNumurs;
+        foreach ($this->dmNRecRows1 as $gatavais) {
+            $tblRindasR = new tblRindasR();
+            $tblRindasR->RN_VEIDS = $gatavais->RN_VEIDS;
+            $tblRindasR->PK_NOM = $gatavais->PK_NOM;
+            $tblRindasR->DAUDZ = $gatavais->DAUDZ;
+            $tblRindasR->RAZ_VEIDS = 1; // neatradu skaidrojumu. panjemu no VISMAS piemera
+            $pvzRaz->tblRindasR[] = $tblRindasR;
+        }
+        foreach ($this->dmNRecRows as $izejmateriali) {
+            $tblRindas = new tblRindas();
+            $tblRindas->RN_VEIDS = $izejmateriali->RN_VEIDS;
+            $tblRindas->PK_NOM = $izejmateriali->PK_NOM;
+            $tblRindas->DAUDZ = $izejmateriali->DAUDZ;
+            $tblRindas->RAZ_VEIDS = 0; // neatradu skaidrojumu. panjemu no VISMAS piemera
+            $pvzRaz->tblRindas[] = $tblRindas;
+        }
+
+        if (!$pvzRaz->save()) {
+            throw new Exception('neizdevas saglabat TNdmPvzRaz izveidotu no TNdmRecept.PK_REC' . $this->PK_REC);
+        }
+
+        return $pvzRaz->PK_DOK;
+
     }
 }

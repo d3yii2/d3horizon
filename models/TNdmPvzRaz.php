@@ -151,4 +151,33 @@ class TNdmPvzRaz extends ApiModel implements ApiActiveRecordInterface
     {
         return 'NRAZ';
     }
+
+    /**
+     * sasumē izmantoto produktu izmaksas pēc partiju iepirkumu cenmas
+     * darbojas, ja ir tikai viens produkts
+     * @throws \yii\db\Exception
+     * @throws \simialbi\yii2\rest\Exception
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\httpclient\Exception
+     * @throws \yii\base\Exception
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function calcSarazotaSuma(): void
+    {
+        $summa = 0;
+        foreach($this->qrySubRindas as $subRinda) {
+            $nomPartija = TNdmNolPartSarDlg::findOne($subRinda->PK_NOMPART);
+            $summa += $nomPartija->CENA_IEG * $subRinda->DAUDZ;
+        }
+
+        /**
+         * Pavadzīmes ražojuma summas aizpilde
+         * POST ../rest/TNdmPvzRaz/2543
+         */
+        $this->tblRindasR[0]->SUMMA = $summa;
+        $this->tblRindasR[0]->isNewRecord = true;
+        if (!$this->save()) {
+            throw new Exception('Neizdevās saglabāt ražojuma summu, TNdmPvzRaz.PK_DOK: ' . $this->PK_DOK);
+        }
+    }
 }
