@@ -40,10 +40,12 @@ class RazosanasPavadzimeController extends D3CommandController
     }
 
     /** straadaa */
-    public function actionFindOne(int $id = 3)
+    public function actionFindOne(int $id)
     {
+
         /** @var TNdmPvzRaz $r */
         $r = TNdmPvzRaz::findOne($id);
+
 
         echo VarDumper::dumpAsString($r->attributes) . PHP_EOL;
         echo 'tblRindas' . PHP_EOL;

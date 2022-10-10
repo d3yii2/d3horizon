@@ -34,7 +34,7 @@ class RecSarController extends D3CommandController
     public function actionXsd()
     {
         $model = new TNdmRecSar();
-        echo VarDumper::dumpAsString($model->getXsd());
+        echo $model->getXsd();
     }
 
 

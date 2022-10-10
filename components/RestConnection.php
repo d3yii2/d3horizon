@@ -5,6 +5,7 @@ namespace d3yii2\d3horizon\components;
 use d3yii2\d3horizon\exceptions\RestException;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
+use Yii;
 use yii\base\Component;
 use yii\helpers\Json;
 use yii\helpers\VarDumper;
@@ -56,7 +57,6 @@ class RestConnection extends Component
 
     /**
      * @throws \yii\httpclient\Exception
-     * @throws \simialbi\yii2\rest\Exception
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \d3yii2\d3horizon\exceptions\RestException
      */
@@ -82,7 +82,8 @@ class RestConnection extends Component
         if ($data) {
             $requestOptions[RequestOptions::BODY] = Json::encode($data);
         }
-
+        Yii::debug('requestOptions: ' . VarDumper::dumpAsString($requestOptions),'__METHOD__');
+        Yii::debug('Url: ' . $url,'__METHOD__');
         //echo VarDumper::dumpAsString($requestOptions);
         //echo VarDumper::dumpAsString($url);
         try {
@@ -100,7 +101,14 @@ class RestConnection extends Component
 
 
         $statusCode = $this->response->getStatusCode();
-
+        Yii::debug(
+            'URL: ' . $url . PHP_EOL .
+            'OPtions: ' . VarDumper::dumpAsString($requestOptions) . PHP_EOL .
+            'Response: ' . VarDumper::dumpAsString($this->response) . PHP_EOL .
+            'Headers: ' . VarDumper::dumpAsString($this->response->getHeaders()) . PHP_EOL .
+            'Body: ' . $this->getResponseContent(),
+            '__METHOD__'
+        );
         if ((string)$statusCode === '404') {
             if (($this->getResponseData())) {
                 throw new RestException($this->getResponseContent(), $this->response->getHeaders());
@@ -134,7 +142,11 @@ class RestConnection extends Component
         }
         $stream = $this->response->getBody();
         if ($this->_rawResponse =  $stream->getContents()) {
-            $this->_responseContent = Json::decode($this->_rawResponse);
+            try {
+                $this->_responseContent = Json::decode($this->_rawResponse);
+            } catch (\Exception $e) {
+                $this->_responseContent = [];
+            }
         }
         return $this->_rawResponse;
     }

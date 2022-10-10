@@ -18,7 +18,12 @@ use yii\base\Exception;
  * Nomenklatura - TNdmNolPartSarDlg_TNdmNom001Structure
  * @property  integer $N_PK_NOM
  * @property  string $N_KODS
- * @property  string $N_NOSAUK
+ * @property  string $N_NOSAUK nomenklaturas nosaukums
+ * @property  float $CENA_APR aprekinata cena
+ * @property  float $NOSAUK nosaukums
+ * @property  float $MAT_SUM materialu summa
+ * @property  float $MAT_PROC materiālu izdevumi
+ * @property  float $CENA_IEG  iegādes cena
  *
  *  brīvais atlikums - TNdmNolPartSarDlg_TdmBLData068Structure
  * @property  float $ATL_DAUDZ
@@ -26,8 +31,14 @@ use yii\base\Exception;
  * Uzskaites atlikums TNdmNolPartSarDlg_TNdmVOL067Structure
  * @property  float $FF_DAUDZ
  *
- * TNdmNolPartSarDlg_TNdmPart000Structure
- * @property  float $CENA_IEG  iegādes cena
+ * @property  float $FF_SUMMA Summa LVL
+ * @property  float $FF_SUMMA2V Summa EUR
+ * @property  float $FF_CENA_UZSK Uzskaites cena LVL
+ * @property  float $FF_CENA_UZSK2V Uzskaites cena EUR
+ *
+ *
+ * TNdmNol:TNdmNolStructure
+ *
  *
  */
 class TNdmNolPartSarDlg extends ApiModel implements ApiActiveRecordInterface
@@ -43,6 +54,10 @@ class TNdmNolPartSarDlg extends ApiModel implements ApiActiveRecordInterface
                 'DAT_PART',
                 'PK_NOMPART',
                 'CENA_IEG',
+                'CENA_APR',
+                'NOSAUK',
+                'MAT_SUM',
+                'MAT_PROC',
 
                 /** nomenklatura */
                 'N_PK_NOM','N_KODS','N_NOSAUK',
@@ -51,7 +66,9 @@ class TNdmNolPartSarDlg extends ApiModel implements ApiActiveRecordInterface
                 'ATL_DAUDZ',
 
                 /** Uzskaites atlikums */
-                'FF_DAUDZ',
+                'FF_DAUDZ','FF_SUMMA2V',
+                'FF_SUMMA','FF_CENA_UZSK','FF_CENA_UZSK2V'
+
 
             ]
         );
@@ -64,14 +81,26 @@ class TNdmNolPartSarDlg extends ApiModel implements ApiActiveRecordInterface
             [
                 [
                     [
-                        'N_PK_NOM','PK_NOMPART'
+                        'N_PK_NOM','PK_NOMPART',
                     ],
                     'integer'
                 ],
-                [['N_NOSAUK'], 'string', 'max' => 100],
+                [['N_NOSAUK','NOSAUK'], 'string', 'max' => 100],
                 ['N_KODS', 'string', 'max' => 18],
-                [['CENA_IEG','ATL_DAUDZ','FF_DAUDZ'],'number'],
-                ['DAT_PART', 'date', 'format' => 'php:Y-m-d']
+                [
+                    [
+                        'CENA_IEG','ATL_DAUDZ','FF_DAUDZ',
+                        'CENA_APR',
+                        'NOSAUK',
+                        'MAT_SUM',
+                        'MAT_PROC',
+                        'FF_SUMMA2V','FF_SUMMA','FF_CENA_UZSK',
+                        'FF_CENA_UZSK2V'
+                    ],
+                    'number'
+                ],
+                ['DAT_PART', 'date', 'format' => 'php:Y-m-d'],
+
             ]
         );
     }
@@ -92,7 +121,11 @@ class TNdmNolPartSarDlg extends ApiModel implements ApiActiveRecordInterface
             'TNdmVOL' => [
                 'parent' => 'NP',
                 'prefix' => 'FF',
-                'fields' => ['DAUDZ']
+                'fields' => [
+                    'DAUDZ','SUMMA',
+                    'SUMMA2V','CENA_UZSK',
+                    'CENA_UZSK2V'
+                ]
             ],
         ];
     }

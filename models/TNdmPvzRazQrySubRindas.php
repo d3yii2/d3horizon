@@ -14,10 +14,26 @@ use yii\db\BaseActiveRecord;
  * @property integer $RN Rindas numurs
  * @property integer $PK_NOMPART
  * @property float $DAUDZ Pavadzīme
+ * @property int $PK_VOL Pavadzīme
+ * @property string $NUMURS Oartija
+ * @property int $PK_DOK
+ * @property int $PK_NOL
+ * @property string $DAT_TERM deriguma termins
+ * @property string $SERTIFS sertifikats
+ * @property string $NOL_KODS Noliktava
+ * @property float $CENA_IEG Uzsk. cena, Ls
+ * @property float $SUMMA Summa, Ls
+ * @property int $STATUSS
  *
  */
 class TNdmPvzRazQrySubRindas extends BaseActiveRecord
 {
+    public const STATUS_APSTRADE = -2;
+    public const STATUS_GRAMATOTS = 3;
+    public const STATUS_IZPILDITS = 2;
+    public const STATUS_IZVEIDOTS = 0;
+    public const STATUS_SAGATAVE = 1;
+    public const STATUS_STORNETS = 4;
 
     public function attributes(): array
     {
@@ -27,6 +43,16 @@ class TNdmPvzRazQrySubRindas extends BaseActiveRecord
                 'RN',
                 'PK_NOMPART',
                 'DAUDZ',
+                'PK_VOL',
+                'NUMURS',
+                'PK_DOK',
+                'PK_NOL',
+                'DAT_TERM',
+                'SERTIFS',
+                'NOL_KODS',
+                'CENA_IEG',
+                'SUMMA',
+                'STATUSS'
             ]
         );
     }
@@ -39,9 +65,13 @@ class TNdmPvzRazQrySubRindas extends BaseActiveRecord
                 [
                     [
                         'RN','PK_NOMPART','DAUDZ',
+                        'PK_VOL','PK_DOK','PK_NOL',
+                        'STATUSS'
                     ],
                     'integer'
                 ],
+                [['NUMURS','DAT_TERM','SERTIFS','NOL_KODS'],'string'],
+                [['CENA_IEG'.'SUMMA'],'number']
             ]
         );
     }
@@ -90,4 +120,6 @@ class TNdmPvzRazQrySubRindas extends BaseActiveRecord
     {
         // TODO: Implement getDb() method.
     }
+
+
 }

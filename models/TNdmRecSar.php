@@ -19,12 +19,6 @@ use d3yii2\d3horizon\interfaces\ApiActiveRecordInterface;
 class TNdmRecSar extends ApiModel implements ApiActiveRecordInterface
 {
 
-//    public function init()
-//    {
-//        parent::init();
-//        $this->PK_DOKT = TdmDocType::KD_KLIENTS;
-//    }
-
     public function attributes(): array
     {
 

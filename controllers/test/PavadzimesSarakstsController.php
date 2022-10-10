@@ -91,6 +91,13 @@ class PavadzimesSarakstsController extends D3CommandController
         }
     }
 
+    public function actionFindByPkDok(int $pkDok)
+    {
+        $p = TNdmPvzSar::findOne(['PK_DOK' => $pkDok]);
+        $this->out(VarDumper::dumpAsString($p->attributes));
+
+    }
+
     /**
      *  ERROR 'Nav ievadīts valūtas  kurss 05.01.1993.!'
      * @param int $id

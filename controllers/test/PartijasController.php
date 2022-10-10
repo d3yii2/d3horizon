@@ -36,7 +36,7 @@ class PartijasController extends D3CommandController
     /** straadaa */
     public function actionFindOne(int $id)
     {
-        $r = TNdmNolPartSarDlg::findOne(['PK_NOMPART' =>377144]);
+        $r = TNdmNolPartSarDlg::findOne(['PK_NOMPART' =>$id]);
         echo VarDumper::dumpAsString($r->attributes);
     }
 

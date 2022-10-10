@@ -16,6 +16,8 @@ use yii\db\BaseActiveRecord;
  * @property integer $DAUDZ daudzums
  * @property integer $PK_NOL Noliktava
  * @property float $SUMMA SUMMA
+ * @property float $SUMMA_IEP2V Iepirkuma summa
+ * @property float $SUMMA_STAT2V Iepirkuma summa
  *
  */
 class tblRindasR extends BaseActiveRecord
@@ -37,7 +39,9 @@ class tblRindasR extends BaseActiveRecord
                 'RAZ_VEIDS',
                 'DAUDZ',
                 'PK_NOL',
-                'SUMMA'
+                'SUMMA',
+                'SUMMA_IEP2V',
+                'SUMMA_STAT2V'
             ]
         );
     }
@@ -48,7 +52,7 @@ class tblRindasR extends BaseActiveRecord
             parent::rules(),
             [
                 [['RN_VEIDS','PK_NOM','RAZ_VEIDS','DAUDZ','PK_NOL'], 'integer'],
-                ['SUMMA','number']
+                [['SUMMA','SUMMA_IEP2V','SUMMA_STAT2V'],'number']
             ]
         );
     }

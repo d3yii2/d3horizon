@@ -96,19 +96,20 @@ class TNdmRecept extends ApiModel implements ApiActiveRecordInterface
 
     /**
      * @param int $pkNom
+     * @param int|null $cacheTime
      * @return \d3yii2\d3horizon\models\TNdmRecept|null
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \d3yii2\d3horizon\exceptions\RestException
      * @throws \simialbi\yii2\rest\Exception
      * @throws \yii\base\InvalidConfigException
-     * @throws \yii\db\Exception
      * @throws \yii\httpclient\Exception
-     * @deprecated parak leni strada, kamer atrod datus
      */
-    public static function findOneBySarazotasNomenklaturas(int $pkNom): ?TNdmRecept
+    public static function findOneBySarazotasNomenklaturas(int $pkNom, int $cacheTime = null): ?TNdmRecept
     {
+        /** @var TNdmRecept $recept */
         foreach (self::findAll([]) as $recept) {
             /** @var self $receptesEntity */
-            $receptesEntity = self::findOne($recept->PK_REC);
+            $receptesEntity = self::findOneByPk($recept->PK_REC,$cacheTime);
             foreach ($receptesEntity->dmNRecRows as $row) {
                 if ((int)$row->PK_NOM === $pkNom) {
                     return $receptesEntity;
@@ -129,6 +130,7 @@ class TNdmRecept extends ApiModel implements ApiActiveRecordInterface
     public function razot(int $noliktava, string $pavadzimesNumurs = null): int
     {
         $pvzRazModel = new TNdmPvzRaz();
+        /** @var TNdmPvzRaz $pvzRaz */
         $pvzRaz = $pvzRazModel->getTemplate(37);
         $pvzRaz->PK_ESPATS =$noliktava;
         $pvzRaz->DOK_NR = $pavadzimesNumurs;
@@ -156,4 +158,5 @@ class TNdmRecept extends ApiModel implements ApiActiveRecordInterface
         return $pvzRaz->PK_DOK;
 
     }
+
 }

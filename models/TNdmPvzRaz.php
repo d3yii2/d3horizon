@@ -164,17 +164,16 @@ class TNdmPvzRaz extends ApiModel implements ApiActiveRecordInterface
      */
     public function calcSarazotaSuma(): void
     {
-        $summa = 0;
-        foreach($this->qrySubRindas as $subRinda) {
-            $nomPartija = TNdmNolPartSarDlg::findOne($subRinda->PK_NOMPART);
-            $summa += $nomPartija->CENA_IEG * $subRinda->DAUDZ;
-        }
+
+        /** @var TNdmPvzSar $sarazots */
+        $sarazots = TNdmPvzSar::findOne($this->PK_DOK);
 
         /**
          * Pavadzīmes ražojuma summas aizpilde
          * POST ../rest/TNdmPvzRaz/2543
          */
-        $this->tblRindasR[0]->SUMMA = $summa;
+        $this->tblRindasR[0]->SUMMA = $sarazots->KOP_SUMMA_IZIEP2V;
+        $this->tblRindasR[0]->SUMMA_IEP2V = $sarazots->KOP_SUMMA_IZIEP2V;
         $this->tblRindasR[0]->isNewRecord = true;
         if (!$this->save()) {
             throw new Exception('Neizdevās saglabāt ražojuma summu, TNdmPvzRaz.PK_DOK: ' . $this->PK_DOK);

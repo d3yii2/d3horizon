@@ -25,7 +25,16 @@ use yii\base\Exception;
  * @property int $PK_KLIENTS Cehs
  *
  * TNdmPvzSar_TNdmPvzSarAddition085Structure
- * @property float $KOP_SUMMA_IZIEP Cehs
+ * @property float $KOP_SUMMA_IEP iepirkuma summa
+ * @property float $KOP_SUMMA_IZIEP Izejvielui iepirkuma summa
+ * @property float $KOP_SUM_REAL Realizācijas summa
+ * @property float $KOP_UZCEN Uzcenojums
+ * @property float $SUMMA_NOM Nomenklatūru summa
+ *
+ * @property float $KOP_SUMMA_IEP2V iepirkuma summa, EUR
+ * @property float $KOP_SUMMA_IZIEP2V Izejvielu iepirkuma summa, EUR
+ * @property float $KOP_SUM_REAL2V Realizācijas summa, EUR
+ *
  *
  */
 class TNdmPvzSar extends ApiModel implements ApiActiveRecordInterface
@@ -69,7 +78,15 @@ class TNdmPvzSar extends ApiModel implements ApiActiveRecordInterface
                 'DOK_NR',
                 'TIPS',
                 'PK_KLIENTS',
-                'KOP_SUMMA_IZIEP'
+                'KOP_SUMMA_IEP',
+                'KOP_SUMMA_IZIEP',
+                'KOP_SUM_REAL',
+                'KOP_UZCEN',
+                'KOP_SUMMA_NOM',
+                'KOP_SUMMA_IEP2V',
+                'KOP_SUMMA_IZIEP2V',
+                'KOP_SUM_REAL2V',
+
             ]
         );
     }
@@ -89,7 +106,19 @@ class TNdmPvzSar extends ApiModel implements ApiActiveRecordInterface
                     ],
                     'integer'
                 ],
-                [['KOP_SUMMA_IZIEP'],'float']
+                [
+                    [
+                        'KOP_SUMMA_IEP',
+                        'KOP_SUMMA_IZIEP',
+                        'KOP_SUM_REAL',
+                        'KOP_UZCEN',
+                        'KOP_SUMMA_NOM',
+                        'KOP_SUMMA_IEP2V',
+                        'KOP_SUMMA_IZIEP2V',
+                        'KOP_SUM_REAL2V',
+                    ],
+                    'float'
+                ]
             ]
         );
     }
@@ -100,7 +129,16 @@ class TNdmPvzSar extends ApiModel implements ApiActiveRecordInterface
             'TNdmPvzSarAddition085' => [
                 'parent' => 'D',
                 'prefix' => 'KOP',
-                'fields' => ['SUMMA_IZIEP']
+                'fields' => [
+                    'SUMMA_IEP',
+                    'SUMMA_IZIEP', //visma iedeva
+                    'SUM_REAL',
+                    'UZCEN',
+                    'SUMMA_NOM',
+                    'SUMMA_IEP2V',
+                    'SUMMA_IZIEP2V',
+                    'SUM_REAL2V',
+                ]
             ],
         ];
     }

@@ -47,6 +47,7 @@ class ApiModel extends BaseActiveRecord
      * @throws \yii\db\Exception
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\httpclient\Exception|\GuzzleHttp\Exception\GuzzleException
+     * @throws \d3yii2\d3horizon\exceptions\RestException
      */
     public static function findOne($condition)
     {
@@ -63,6 +64,24 @@ class ApiModel extends BaseActiveRecord
         $modelClass = static::class;
         return $modelClass::find()
             ->andWhere($condition)
+            ->one();
+    }
+
+    /**
+     * @throws \simialbi\yii2\rest\Exception
+     * @throws \yii\base\InvalidConfigException
+     * @throws \d3yii2\d3horizon\exceptions\RestException
+     * @throws \yii\httpclient\Exception
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public static function findOneByPk(int $pkId, int $cacheSeconds = null)
+    {
+        $modelClass = static::class;
+        $model = new $modelClass;
+        $primaryKey = $model::primaryKey()[0];
+        return $model::find()
+            ->setFindOneByPkCachingTime($cacheSeconds)
+            ->andWhere([$primaryKey => $pkId])
             ->one();
     }
 

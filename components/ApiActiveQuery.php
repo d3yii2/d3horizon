@@ -2,6 +2,7 @@
 
 namespace d3yii2\d3horizon\components;
 
+use Yii;
 use yii\db\ActiveQuery;
 
 
@@ -11,13 +12,20 @@ use yii\db\ActiveQuery;
 class ApiActiveQuery extends ActiveQuery
 {
 
+    public $findOneByPkcachingTime;
+
+    public function setFindOneByPkCachingTime(int $seconds): self
+    {
+        $this->findOneByPkcachingTime = $seconds;
+        return $this;
+    }
     /**
-     * @param null $db
+     * @param \d3yii2\d3horizon\components\RestConnection $db
      * @return array|false|mixed|null
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \simialbi\yii2\rest\Exception
      * @throws \yii\base\InvalidConfigException
-     * @throws \yii\httpclient\Exception
+     * @throws \yii\httpclient\Exception|\d3yii2\d3horizon\exceptions\RestException
      */
     public function one($db = null)
     {
@@ -29,16 +37,24 @@ class ApiActiveQuery extends ActiveQuery
         $class = $this->modelClass;
         $primaryKey = $class::primaryKey()[0];
         $apiRequestRecord = $class::apiRequestRecord();
+
+        /** find by PK */
         if ($apiRequestRecord
             && count($this->where) === 1
             && isset($this->where[$primaryKey])
         ) {
 
+            $cacheKey = $this->modelClass . '-pk-' . $this->where[$primaryKey];
+            if (!$this->findOneByPkcachingTime || !$responseContentData = Yii::$app->cache->get($cacheKey)) {
 
-            if (!$db->request('GET', $apiRequestRecord . '/' . $this->where[$primaryKey])) {
-                return null;
+                if (!$db->request('GET', $apiRequestRecord . '/' . $this->where[$primaryKey])) {
+                    return null;
+                }
+                $responseContentData = $db->getResponseData();
+                if ($this->findOneByPkcachingTime) {
+                    Yii::$app->cache->set($cacheKey, $responseContentData, $this->findOneByPkcachingTime);
+                }
             }
-            $responseContentData = $db->getResponseData();
             if (!$row = $responseContentData['entity'] ?? false) {
                 return null;
             }
@@ -59,7 +75,7 @@ class ApiActiveQuery extends ActiveQuery
                                 }
                             }
                             $entityModel = new $entityModelClass();
-                            $entityModel->load($eRow,'');
+                            $entityModel->setAttributes($eRow, false);
                             $entityModel->isNewRecord = false;
                             $model->$entityName[] = $entityModel;
                         }
@@ -77,6 +93,9 @@ class ApiActiveQuery extends ActiveQuery
             return null;
         }
         $responseContentData = $db->getResponseData();
+        if (!$responseContentData) {
+            return null;
+        }
         if (!$rows = $this->getResponseRows($responseContentData)) {
             return null;
         }

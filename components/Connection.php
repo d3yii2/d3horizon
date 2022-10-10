@@ -93,13 +93,12 @@ class Connection extends \simialbi\yii2\rest\Connection
             $headers = [];
         }
         
-        Yii::beginProfile($profile, __METHOD__);
+        //Yii::beginProfile($profile, __METHOD__);
         /* @var $request \yii\httpclient\Request */
         
-        Yii::debug($method, __METHOD__ . '-method');
-        Yii::debug($this->handler->baseUrl . '/' . $path, __METHOD__ . '-url');
-        Yii::debug($data, __METHOD__ . '-data');
-        Yii::debug($headers, __METHOD__ . '-headers');
+        Yii::debug($this->handler->baseUrl . '/' . $path, __METHOD__);
+        Yii::debug($data, __METHOD__);
+        Yii::debug($headers, __METHOD__);
         // By unknown  reason base auth header is still missing after this.
         $request = call_user_func([$this->handler, $method], $url, $data, $headers);
         
@@ -127,13 +126,14 @@ class Connection extends \simialbi\yii2\rest\Connection
             $stream = $response->getBody();
             if (!$this->isTestMode && $responseContent =  $stream->getContents()) {
                 $responseContentData = Json::decode($responseContent);
+                Yii::debug($headers, __METHOD__ );
             }
             $stream->tell();
             $stream->close();
         } catch (Exception $e) {
             throw new RestException('Request failed', [], 1, $e);
         }
-        Yii::endProfile($profile, __METHOD__);
+        //Yii::endProfile($profile, __METHOD__);
         $statusCode = $response->getStatusCode();
         if (!$this->isTestMode) {
             if ((string)$statusCode === '404') {
