@@ -123,11 +123,16 @@ class TNdmRecept extends ApiModel implements ApiActiveRecordInterface
     /**
      * No receptes izveido razosanas pavadzimi
      * @param int $noliktava
+     * @param int $count
      * @param string|null $pavadzimesNumurs
      * @return int
      * @throws \yii\db\Exception
      */
-    public function razot(int $noliktava, string $pavadzimesNumurs = null): int
+    public function razot(
+        int $noliktava,
+        int $count = 1,
+        string $pavadzimesNumurs = null
+    ): int
     {
         $pvzRazModel = new TNdmPvzRaz();
         /** @var TNdmPvzRaz $pvzRaz */
@@ -140,7 +145,7 @@ class TNdmRecept extends ApiModel implements ApiActiveRecordInterface
             $tblRindas = new tblRindas();
             $tblRindas->RN_VEIDS = $izejmateriali->RN_VEIDS;
             $tblRindas->PK_NOM = $izejmateriali->PK_NOM;
-            $tblRindas->DAUDZ = $izejmateriali->DAUDZ;
+            $tblRindas->DAUDZ = $izejmateriali->DAUDZ * $count;
             $tblRindas->RAZ_VEIDS = 1; // neatradu skaidrojumu. panjemu no VISMAS piemera
             $pvzRaz->tblRindas[] = $tblRindas;
         }
@@ -148,7 +153,7 @@ class TNdmRecept extends ApiModel implements ApiActiveRecordInterface
             $tblRindasR = new tblRindasR();
             $tblRindasR->RN_VEIDS = $gatavais->RN_VEIDS;
             $tblRindasR->PK_NOM = $gatavais->PK_NOM;
-            $tblRindasR->DAUDZ = $gatavais->DAUDZ;
+            $tblRindasR->DAUDZ = $gatavais->DAUDZ * $count;
             $tblRindasR->RAZ_VEIDS = 0; // neatradu skaidrojumu. panjemu no VISMAS piemera
             $pvzRaz->tblRindasR[] = $tblRindasR;
         }
