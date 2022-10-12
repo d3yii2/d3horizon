@@ -12,13 +12,16 @@ use yii\db\ActiveQuery;
 class ApiActiveQuery extends ActiveQuery
 {
 
+    /** @var integer */
     public $findOneByPkcachingTime;
+
 
     public function setFindOneByPkCachingTime(int $seconds): self
     {
         $this->findOneByPkcachingTime = $seconds;
         return $this;
     }
+
     /**
      * @param \d3yii2\d3horizon\components\RestConnection $db
      * @return array|false|mixed|null

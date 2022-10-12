@@ -67,6 +67,10 @@ class Connection extends \simialbi\yii2\rest\Connection
         return static::$_handler;
     }
 
+    /**
+     * @throws \simialbi\yii2\rest\Exception
+     * @throws \d3yii2\d3horizon\exceptions\RestException
+     */
     protected function request(string $method, $url, array $data = [])
     {
         if (is_array($url)) {
@@ -131,7 +135,8 @@ class Connection extends \simialbi\yii2\rest\Connection
             $stream->tell();
             $stream->close();
         } catch (Exception $e) {
-            throw new RestException('Request failed', [], 1, $e);
+            Yii::error($e->getMessage() . PHP_EOL . $e->getTraceAsString());
+            throw new \d3yii2\d3horizon\exceptions\RestException('Request failed: ' . $e->getMessage());
         }
         //Yii::endProfile($profile, __METHOD__);
         $statusCode = $response->getStatusCode();
@@ -141,7 +146,7 @@ class Connection extends \simialbi\yii2\rest\Connection
             }
             if (strncmp('20', $response->getStatusCode(), 2) !== 0) {
                 if ($this->enableExceptions) {
-                    throw new RestException($responseContent, $response->getHeaders());
+                    throw new RestException($responseContent);
                 }
                 return false;
             }

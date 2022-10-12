@@ -74,15 +74,21 @@ class ApiModel extends BaseActiveRecord
      * @throws \yii\httpclient\Exception
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public static function findOneByPk(int $pkId, int $cacheSeconds = null)
+    public static function findOneByPk(int $pkId, int $cacheSeconds = null, int $counter = null)
     {
         $modelClass = static::class;
         $model = new $modelClass;
         $primaryKey = $model::primaryKey()[0];
-        return $model::find()
+        $foundModel = $model::find()
             ->setFindOneByPkCachingTime($cacheSeconds)
             ->andWhere([$primaryKey => $pkId])
             ->one();
+        if ($counter && $counter !== $foundModel->COUNTER) {
+            $foundModel = $model::find()
+                ->andWhere([$primaryKey => $pkId])
+                ->one();
+        }
+        return $foundModel;
     }
 
     public function save($runValidation = true, $attributeNames = null)
@@ -283,11 +289,20 @@ class ApiModel extends BaseActiveRecord
         return $connection->getResponseRawData();
     }
 
-    public function getDtata(string $method, string $request )
+    /**
+     * @throws \yii\httpclient\Exception
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \d3yii2\d3horizon\exceptions\RestException
+     */
+    public function getDtata(
+        string $method,
+        string $request,
+        array $data = []
+    ): ?string
     {
 
         $connection = $this->getRestConnection();
-        if (!$connection->request($method,$request)) {
+        if (!$connection->request($method,$request, $data)) {
             return null;
         }
         return $connection->getResponseRawData();
@@ -381,12 +396,7 @@ class ApiModel extends BaseActiveRecord
     private function getVismaData(): array
     {
         $modelClass = static::class;
-        $insertData = $this->dirtyAttributes;
-//        foreach ($this->dirtyAttributes as $attributeName => $attributeValue) {
-//            if ($attributeValue) {
-//                $insertData[$attributeName] = $attributeValue;
-//            }
-//        }
+        $insertData = self::getNotNullAttributes($this->dirtyAttributes);
 
         if (method_exists($modelClass, 'relatedEntities')) {
             foreach ($modelClass::relatedEntities() as $entityDef) {
@@ -395,10 +405,10 @@ class ApiModel extends BaseActiveRecord
                     continue;
                 }
                 $entityRecords = [];
-                /** @var \yii\base\Model $entityRecords */
+                /** @var \yii\db\ActiveRecord $entityRecord */
                 foreach ($this->$entityName as $entityRecord) {
                     if ($entityRecord->dirtyAttributes) {
-                        $entityRecords[] = $entityRecord->dirtyAttributes;
+                        $entityRecords[] = self::getNotNullAttributes($entityRecord->dirtyAttributes);
                     }
                 }
                 if ($entityRecords) {
@@ -406,6 +416,21 @@ class ApiModel extends BaseActiveRecord
                 }
             }
         }
+        return $insertData;
+    }
+
+    /**
+     * @param array $attributes
+     * @return array
+     */
+    private static function getNotNullAttributes(array $attributes): array
+    {
+        $insertData = [];
+        foreach ($attributes as $attributeName => $atributeValue) {
+            if ($atributeValue !== null) {
+                $insertData[$attributeName] = $atributeValue;
+            }
+        };
         return $insertData;
     }
 }

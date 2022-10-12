@@ -179,4 +179,53 @@ class TNdmPvzRaz extends ApiModel implements ApiActiveRecordInterface
             throw new Exception('Neizdevās saglabāt ražojuma summu, TNdmPvzRaz.PK_DOK: ' . $this->PK_DOK);
         }
     }
+
+    public function isQrySubrindasGramatots() : bool
+    {
+        $is = true;
+        foreach ($this->qrySubRindas as $qrySubRinda) {
+            $is = $is && $qrySubRinda->isStatusGramatots();
+        }
+        return $is;
+    }
+
+    /**
+     * izpilde
+     * @param string $gramDate
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \d3yii2\d3horizon\exceptions\RestException
+     * @throws \yii\httpclient\Exception
+     */
+    public function executeFromKey(string $gramDate): void
+    {
+        $this->getDtata(
+            'POST',
+            'TNdmPvzRaz/ExecuteFromKey',
+            [
+                'aKey' => $this->PK_DOK,
+                'CounterVal' => $this->COUNTER,
+                'GramDate' =>$gramDate
+            ]
+        );
+    }
+
+    /**
+     * Ģirts Juraševskis  |  10/10/2022 2:13 PM
+     * DeleteDraft ir kontējumu sagataves dzēšana.
+     * Tā kā veido dokumentu no nulles, šeit vari likt 0.
+     */
+    public function bookFromKey(int $pkShema, int $deleteDraft): void
+    {
+        $this->getDtata(
+            'POST',
+            'TNdmPvzRaz/BookFromKey',
+            [
+                'aKey' => $this->PK_DOK,
+                'CounterVal' => $this->COUNTER,
+                'aSchemaPk' =>$pkShema,
+                'DeleteDraft' =>$deleteDraft,
+            ]
+        );
+    }
 }

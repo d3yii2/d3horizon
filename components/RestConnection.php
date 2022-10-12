@@ -83,7 +83,7 @@ class RestConnection extends Component
             $requestOptions[RequestOptions::BODY] = Json::encode($data);
         }
         Yii::debug('requestOptions: ' . VarDumper::dumpAsString($requestOptions),'__METHOD__');
-        Yii::debug('Url: ' . $url,'__METHOD__');
+        Yii::debug('Url: ' . $url,__METHOD__);
         //echo VarDumper::dumpAsString($requestOptions);
         //echo VarDumper::dumpAsString($url);
         try {
@@ -101,25 +101,23 @@ class RestConnection extends Component
 
 
         $statusCode = $this->response->getStatusCode();
-        Yii::debug(
-            'URL: ' . $url . PHP_EOL .
-            'OPtions: ' . VarDumper::dumpAsString($requestOptions) . PHP_EOL .
+        Yii::debug( PHP_EOL .
+            'URL: ' . $method . ' ' . $url . PHP_EOL .
+            'Options: ' . VarDumper::dumpAsString($requestOptions) . PHP_EOL .
             'Response: ' . VarDumper::dumpAsString($this->response) . PHP_EOL .
             'Headers: ' . VarDumper::dumpAsString($this->response->getHeaders()) . PHP_EOL .
             'Body: ' . $this->getResponseContent(),
-            '__METHOD__'
+            __METHOD__
         );
         if ((string)$statusCode === '404') {
             if (($this->getResponseData())) {
-                throw new RestException($this->getResponseContent(), $this->response->getHeaders());
+                throw new RestException($this->getResponseContent());
             }
             return false;
         }
         if (strncmp('20', $statusCode, 2) !== 0) {
             if ($this->enableExceptions) {
-                $stream = $this->response->getBody();
-                $responseContent =  $stream->getContents();
-                throw new RestException($responseContent, $this->response->getHeaders());
+                throw new RestException($this->getResponseContent());
             }
             return false;
         }

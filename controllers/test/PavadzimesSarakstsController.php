@@ -91,6 +91,13 @@ class PavadzimesSarakstsController extends D3CommandController
         }
     }
 
+    public function actionFindByDate(string $date)
+    {
+        foreach (TNdmPvzSar::findAll(['DAT_DOK' => $date]) as $p) {
+            $this->out(VarDumper::dumpAsString($p->attributes));
+        }
+    }
+
     public function actionFindByPkDok(int $pkDok)
     {
         $p = TNdmPvzSar::findOne(['PK_DOK' => $pkDok]);

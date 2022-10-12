@@ -7,9 +7,13 @@ use yii\helpers\Json;
 
 class RestException extends Exception
 {
-    public function __construct(string $responseContent, array $headers)
+    public function __construct(string $responseContent)
     {
-        $response = Json::decode($responseContent);
-        parent::__construct($response['class'] . ': ' . $response['message']);
+        try {
+            $response = Json::decode($responseContent);
+            parent::__construct($response['class'] . ': ' . $response['message']);
+        } catch (\Exception $exception) {
+            parent::__construct($responseContent);
+        }
     }
 }

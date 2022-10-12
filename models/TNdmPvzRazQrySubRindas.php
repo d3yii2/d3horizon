@@ -24,6 +24,8 @@ use yii\db\BaseActiveRecord;
  * @property float $CENA_IEG Uzsk. cena, Ls
  * @property float $SUMMA Summa, Ls
  * @property int $STATUSS
+ * @property int $PK_NOM Nomenklatūra
+ * @property string $DAT datums
  *
  */
 class TNdmPvzRazQrySubRindas extends BaseActiveRecord
@@ -52,7 +54,9 @@ class TNdmPvzRazQrySubRindas extends BaseActiveRecord
                 'NOL_KODS',
                 'CENA_IEG',
                 'SUMMA',
-                'STATUSS'
+                'STATUSS',
+                'PK_NOM',
+                'DAT'
             ]
         );
     }
@@ -66,11 +70,11 @@ class TNdmPvzRazQrySubRindas extends BaseActiveRecord
                     [
                         'RN','PK_NOMPART','DAUDZ',
                         'PK_VOL','PK_DOK','PK_NOL',
-                        'STATUSS'
+                        'STATUSS','PK_NOM'
                     ],
                     'integer'
                 ],
-                [['NUMURS','DAT_TERM','SERTIFS','NOL_KODS'],'string'],
+                [['NUMURS','DAT_TERM','SERTIFS','NOL_KODS','DAT'],'string'],
                 [['CENA_IEG'.'SUMMA'],'number']
             ]
         );
@@ -121,5 +125,9 @@ class TNdmPvzRazQrySubRindas extends BaseActiveRecord
         // TODO: Implement getDb() method.
     }
 
+    public function isStatusGramatots(): bool
+    {
+        return $this->STATUSS === self::STATUS_GRAMATOTS;
+    }
 
 }

@@ -109,7 +109,7 @@ class TNdmRecept extends ApiModel implements ApiActiveRecordInterface
         /** @var TNdmRecept $recept */
         foreach (self::findAll([]) as $recept) {
             /** @var self $receptesEntity */
-            $receptesEntity = self::findOneByPk($recept->PK_REC,$cacheTime);
+            $receptesEntity = self::findOneByPk($recept->PK_REC,$cacheTime, $recept->COUNTER);
             foreach ($receptesEntity->dmNRecRows as $row) {
                 if ((int)$row->PK_NOM === $pkNom) {
                     return $receptesEntity;
@@ -133,24 +133,25 @@ class TNdmRecept extends ApiModel implements ApiActiveRecordInterface
         /** @var TNdmPvzRaz $pvzRaz */
         $pvzRaz = $pvzRazModel->getTemplate(37);
         $pvzRaz->PK_ESPATS =$noliktava;
-        $pvzRaz->DOK_NR = $pavadzimesNumurs;
-        foreach ($this->dmNRecRows1 as $gatavais) {
-            $tblRindasR = new tblRindasR();
-            $tblRindasR->RN_VEIDS = $gatavais->RN_VEIDS;
-            $tblRindasR->PK_NOM = $gatavais->PK_NOM;
-            $tblRindasR->DAUDZ = $gatavais->DAUDZ;
-            $tblRindasR->RAZ_VEIDS = 1; // neatradu skaidrojumu. panjemu no VISMAS piemera
-            $pvzRaz->tblRindasR[] = $tblRindasR;
+        if ($pavadzimesNumurs) {
+            $pvzRaz->DOK_NR = $pavadzimesNumurs;
         }
-        foreach ($this->dmNRecRows as $izejmateriali) {
+        foreach ($this->dmNRecRows1 as $izejmateriali) {
             $tblRindas = new tblRindas();
             $tblRindas->RN_VEIDS = $izejmateriali->RN_VEIDS;
             $tblRindas->PK_NOM = $izejmateriali->PK_NOM;
             $tblRindas->DAUDZ = $izejmateriali->DAUDZ;
-            $tblRindas->RAZ_VEIDS = 0; // neatradu skaidrojumu. panjemu no VISMAS piemera
+            $tblRindas->RAZ_VEIDS = 1; // neatradu skaidrojumu. panjemu no VISMAS piemera
             $pvzRaz->tblRindas[] = $tblRindas;
         }
-
+        foreach ($this->dmNRecRows as $gatavais) {
+            $tblRindasR = new tblRindasR();
+            $tblRindasR->RN_VEIDS = $gatavais->RN_VEIDS;
+            $tblRindasR->PK_NOM = $gatavais->PK_NOM;
+            $tblRindasR->DAUDZ = $gatavais->DAUDZ;
+            $tblRindasR->RAZ_VEIDS = 0; // neatradu skaidrojumu. panjemu no VISMAS piemera
+            $pvzRaz->tblRindasR[] = $tblRindasR;
+        }
         if (!$pvzRaz->save()) {
             throw new Exception('neizdevas saglabat TNdmPvzRaz izveidotu no TNdmRecept.PK_REC' . $this->PK_REC);
         }
